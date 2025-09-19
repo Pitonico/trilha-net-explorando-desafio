@@ -1,60 +1,50 @@
-namespace DesafioProjetoHospedagem.Models
+using System.Globalization;
+using System.Numerics;
+
+namespace DesafioProjetoHospedagem.Models;
+
+public class Reserva
 {
-    public class Reserva
+    public List<Pessoa> Hospedes { get; private set; } = new();
+    public Suite Suite { get; private set; }
+    public int DiasReservados { get; private set; }
+
+    public Reserva() { }
+
+    public Reserva(int diasReservados)
     {
-        public List<Pessoa> Hospedes { get; set; }
-        public Suite Suite { get; set; }
-        public int DiasReservados { get; set; }
+        if (diasReservados <= 0) throw new ArgumentException("Dias reservados deve ser maior que zero.");
 
-        public Reserva() { }
+        DiasReservados = diasReservados;
+    }
 
-        public Reserva(int diasReservados)
-        {
-            DiasReservados = diasReservados;
-        }
+    public void CadastrarHospedes(List<Pessoa> hospedes)
+    {
+        Suite = Suite ?? throw new InvalidOperationException("A suíte deve ser cadastrada antes de cadastrar hóspedes.");
 
-        public void CadastrarHospedes(List<Pessoa> hospedes)
-        {
-            // TODO: Verificar se a capacidade é maior ou igual ao número de hóspedes sendo recebido
-            // *IMPLEMENTE AQUI*
-            if (true)
-            {
-                Hospedes = hospedes;
-            }
-            else
-            {
-                // TODO: Retornar uma exception caso a capacidade seja menor que o número de hóspedes recebido
-                // *IMPLEMENTE AQUI*
-            }
-        }
+        if(!hospedes.Any()) throw new ArgumentException("A lista de hóspedes não pode estar vazia.");
 
-        public void CadastrarSuite(Suite suite)
-        {
-            Suite = suite;
-        }
+        if(hospedes.Count > Suite.Capacidade) throw new ArgumentException("Número de hóspedes excede a capacidade da suíte.");
 
-        public int ObterQuantidadeHospedes()
-        {
-            // TODO: Retorna a quantidade de hóspedes (propriedade Hospedes)
-            // *IMPLEMENTE AQUI*
-            return 0;
-        }
+        Hospedes = hospedes;   
+    }
 
-        public decimal CalcularValorDiaria()
-        {
-            // TODO: Retorna o valor da diária
-            // Cálculo: DiasReservados X Suite.ValorDiaria
-            // *IMPLEMENTE AQUI*
-            decimal valor = 0;
+    public void CadastrarSuite(Suite suite)
+    {
+        Suite = suite;
+    }
 
-            // Regra: Caso os dias reservados forem maior ou igual a 10, conceder um desconto de 10%
-            // *IMPLEMENTE AQUI*
-            if (true)
-            {
-                valor = 0;
-            }
+    public int ObterQuantidadeHospedes()
+    {
+        return Hospedes.Count;
+    }
 
-            return valor;
-        }
+    public string CalcularValorDiaria()
+    {
+        decimal valorPadrão = DiasReservados * Suite.ValorDiaria;
+
+        decimal total = DiasReservados >= 10 ? valorPadrão * 0.9M : valorPadrão;
+
+        return total.ToString("C", new CultureInfo("pt-BR"));
     }
 }
